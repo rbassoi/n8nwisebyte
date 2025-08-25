@@ -1,5 +1,10 @@
-# CRIADO POR GUILHERME LAZAROTTO
-# YOUTUBE: www.youtube.com/@guilherme_laz
+############################################
+# LEIA AQUI                                
+############################################
+# Criado por GUILHERME LAZAROTTO           
+# Youtube: www.youtube.com/@guilherme_laz  
+# Curso completo: www.curson8n.com.br      
+############################################
 
 services:
   redis:
