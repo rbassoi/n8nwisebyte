@@ -1,4 +1,5 @@
-version: '3.8'
+# CRIADO POR GUILHERME LAZAROTTO
+# YOUTUBE: www.youtube.com/@guilherme_laz
 
 services:
   redis:
