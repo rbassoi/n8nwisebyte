@@ -14,8 +14,8 @@ Este tutorial vai guiar você através do processo de instalação e configuraç
 
 - **WAHA**: API de Whatsapp gratuita
 - **n8n**: Plataforma de automação
-- **Redis**: Banco de dados em memória para registro de chats
-- **PostgreSQL** (Opcional): Banco de dados relacional para uso geral
+- **Supabase**: Banco de dados no Supabase para MVP e escalar no futuro
+- **LLM** (Gemini): Modelo para envio e troca de informações
 
 ## Pré-requisitos
 
