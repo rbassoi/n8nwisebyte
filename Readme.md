@@ -20,7 +20,7 @@ Este tutorial vai guiar você através do processo de instalação e configuraç
 ## Pré-requisitos
 
 - Ter o Docker Desktop instalado [Baixe aqui](https://www.docker.com/get-started/)
-- Sistema operacional Windows 10, Windows 11 ou MacOs
+- Sistema operacional Windows 10, Windows 11, Linux ou MacOs (de acordo com o docker compose)
 
 ## Passo a Passo
 
