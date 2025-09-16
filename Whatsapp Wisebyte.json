@@ -1,0 +1,688 @@
+{
+  "name": "Whatsapp Wisebyte",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "03c94c56-42d6-44ac-be3b-9e1257e5fa5c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -704,
+        -208
+      ],
+      "id": "fabaf2ed-1332-48b3-8fbf-691fa7f3fc5a",
+      "name": "Webhook",
+      "webhookId": "03c94c56-42d6-44ac-be3b-9e1257e5fa5c"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "05ef9ef7-62b6-4f6d-830c-09a655b4fb34",
+              "name": "session",
+              "value": "={{ $json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "34dd6126-de20-4f95-a6ec-d45cdaea39c8",
+              "name": "chatId",
+              "value": "={{ $json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "cbcc669b-73b6-4e30-a1b3-e55af0d6ed36",
+              "name": "pushName",
+              "value": "={{ $json.body.payload._data.Info.PushName }}",
+              "type": "string"
+            },
+            {
+              "id": "b19a7e5b-6814-45ee-a342-9a94a19198a0",
+              "name": "payload_id",
+              "value": "={{ $json.body.payload.id }}",
+              "type": "string"
+            },
+            {
+              "id": "49a11531-e43f-4804-beeb-70fed2eedce3",
+              "name": "event",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "98fd1e82-c192-48d0-8b52-112c238d3869",
+              "name": "message",
+              "value": "={{ $json.body.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "80c1d1ba-69b0-44c9-bfb6-1caa06fb92dd",
+              "name": "fromMe",
+              "value": "={{ $json.body.payload.fromMe }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -208
+      ],
+      "id": "713e0c59-cf80-4d4a-8100-e3568ccdf182",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.event }}",
+                    "rightValue": "=message",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "92ab9835-1409-4d25-b2e1-551cdd22e291"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -256,
+        -208
+      ],
+      "id": "c52a2c31-bc4b-4cee-b614-3c6332f6fde3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        80
+      ],
+      "id": "4c0e7dc7-8eab-43c2-92f1-e12a1c078629",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Frlr3takMJnlwrEy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "session": "={{ $('Dados').item.json.session }}",
+        "chatId": "={{ $('Dados').item.json.chatId }}",
+        "messageId": "={{ $('Dados').item.json.payload_id }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        336,
+        -208
+      ],
+      "id": "308c0a2f-bd53-4324-b503-f4c1698403b9",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "k06WKHVhjbxQEwQi",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('Dados').item.json.session }}",
+        "chatId": "={{ $('Dados').item.json.chatId }}",
+        "text": "={{ $('RAG AI Agent').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        576,
+        -208
+      ],
+      "id": "507e8bd6-7cb4-4683-87c2-a057a3e7167e",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "k06WKHVhjbxQEwQi",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "Você é um **Agente de IA Consultor Executivo e Engenheiro de Processos**, especializado em **gestão de empresas, modelagem de processos e crescimento escalável**.  \nSeu papel é atuar como **parceiro estratégico** para organizações que desejam atingir e superar **R$ 10 milhões em faturamento anual**.\n\n### Modo de atuação:\n1. **Diagnóstico**: analise a situação empresarial sob três pilares — estratégia de negócios, eficiência de processos e inovação tecnológica.  \n2. **Planejamento**: apresente **planos de ação estruturados**, com etapas claras, prazos e estimativas de impacto financeiro.  \n3. **Execução**: sugira ferramentas, metodologias (Lean, Six Sigma, OKRs, BSC, Process Mining, automação e IA) e indicadores de desempenho (KPIs) para acompanhar resultados.  \n4. **Escalabilidade**: identifique oportunidades de novos modelos de receita, expansão de mercado e diferenciação competitiva.  \n5. **Exemplos práticos**: use casos reais de empresas de sucesso (especialmente no Brasil e América Latina, quando possível) para ilustrar recomendações.  \n6. **Clareza executiva**: traduza conceitos complexos em linguagem simples, direta e orientada a resultados.  \n7. **Objetivo final**: sempre entregar recomendações que ajudem a empresa a crescer de forma **lucrativa, sustentável e escalável**, superando **R$ 10 milhões de faturamento**.\n\n### Tom de resposta:\n- Profissional, estratégico e analítico.  \n- Direto, mas com visão prática e aplicável.  \n- Sempre conclua com um **plano de execução resumido**, destacando:  \n   - Etapas  \n   - Prazo estimado  \n   - Impacto esperado (financeiro e operacional)  "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -208
+      ],
+      "id": "cd109e91-366e-4f6e-a8c8-cf0a5e384e70",
+      "name": "RAG AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "12"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        80
+      ],
+      "id": "9aade815-2f9a-447e-b853-f75692ea23b0",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "VoAhF16h74pDtm6l",
+          "name": "Postgres account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Use esta tool quando o usuário questionar quais produtos a Wisebyte tem"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        80
+      ],
+      "id": "0fd183dd-acd1-4a5f-a04e-14fc3f6fe3f9",
+      "name": "Produtos"
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        272
+      ],
+      "id": "6ed537ed-a136-4370-b129-7db65e1967a2",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "Il0cIqDs8rQmkyZk",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        192
+      ],
+      "id": "24091e39-ae52-494e-8e20-b86c00a95bc9",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Frlr3takMJnlwrEy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        464
+      ],
+      "id": "1c57c041-1024-4d54-9414-5684062fb610",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Frlr3takMJnlwrEy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        784
+      ],
+      "id": "0a31ba5e-9929-4cd7-bc70-387a04a20b43",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "H2YXP2SR5zyIwX6d",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 1040,
+        "width": 1792,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -368
+      ],
+      "id": "da19c20c-87f7-4cd3-befc-23b63d22609c",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "accept": "application/json, text/plain, */*",
+            "content-type": "application/json",
+            "user-agent": "WAHA/2025.9.2",
+            "x-webhook-request-id": "01K54PB3A7Q58RFTT0AGH7VWGF",
+            "x-webhook-timestamp": "1757873016135",
+            "content-length": "3685",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "host": "host.docker.internal:5678",
+            "connection": "keep-alive"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "id": "evt_01k54pb3a79fkm8q18d4qv3158",
+            "timestamp": 1757873016135,
+            "event": "message",
+            "session": "default",
+            "metadata": {},
+            "me": {
+              "id": "5511974338943@c.us",
+              "pushName": "Ricardo Bassoi",
+              "lid": "118030013075587@lid",
+              "jid": "5511974338943:35@s.whatsapp.net"
+            },
+            "payload": {
+              "id": "false_553195868493@c.us_3ABE01ED3ED9DB00AEF3",
+              "timestamp": 1757873028,
+              "from": "553195868493@c.us",
+              "fromMe": false,
+              "source": "app",
+              "body": "Ola",
+              "to": null,
+              "participant": null,
+              "hasMedia": false,
+              "media": {
+                "Info": {
+                  "Chat": "553195868493@s.whatsapp.net",
+                  "Sender": "553195868493@s.whatsapp.net",
+                  "IsFromMe": false,
+                  "IsGroup": false,
+                  "AddressingMode": "",
+                  "SenderAlt": "63883477839921@lid",
+                  "RecipientAlt": "",
+                  "BroadcastListOwner": "",
+                  "ID": "3ABE01ED3ED9DB00AEF3",
+                  "ServerID": 0,
+                  "Type": "text",
+                  "PushName": "Ricardo",
+                  "Timestamp": "2025-09-14T18:03:48Z",
+                  "Category": "",
+                  "Multicast": false,
+                  "MediaType": "",
+                  "Edit": "",
+                  "MsgBotInfo": {
+                    "EditType": "",
+                    "EditTargetID": "",
+                    "EditSenderTimestampMS": "0001-01-01T00:00:00Z"
+                  },
+                  "MsgMetaInfo": {
+                    "TargetID": "",
+                    "TargetSender": "",
+                    "TargetChat": "",
+                    "DeprecatedLIDSession": null,
+                    "ThreadMessageID": "",
+                    "ThreadMessageSenderJID": ""
+                  },
+                  "VerifiedName": null,
+                  "DeviceSentMeta": null
+                },
+                "Message": {
+                  "conversation": "Ola",
+                  "messageContextInfo": {
+                    "deviceListMetadata": {
+                      "senderKeyHash": "j6e+meVLDRqYdw==",
+                      "senderTimestamp": 1757205242,
+                      "recipientKeyHash": "yo3KUcWvF3+F+g==",
+                      "recipientTimestamp": 1757872641
+                    },
+                    "deviceListMetadataVersion": 2,
+                    "messageSecret": "aj1a7T40PhcA1I71RLtDuDkUKZjCcc1S+1lcJrgr2VM="
+                  }
+                },
+                "IsEphemeral": false,
+                "IsViewOnce": false,
+                "IsViewOnceV2": false,
+                "IsViewOnceV2Extension": false,
+                "IsDocumentWithCaption": false,
+                "IsLottieSticker": false,
+                "IsBotInvoke": false,
+                "IsEdit": false,
+                "SourceWebMsg": null,
+                "UnavailableRequestID": "",
+                "RetryCount": 0,
+                "NewsletterMeta": null,
+                "RawMessage": {
+                  "conversation": "Ola",
+                  "messageContextInfo": {
+                    "deviceListMetadata": {
+                      "senderKeyHash": "j6e+meVLDRqYdw==",
+                      "senderTimestamp": 1757205242,
+                      "recipientKeyHash": "yo3KUcWvF3+F+g==",
+                      "recipientTimestamp": 1757872641
+                    },
+                    "deviceListMetadataVersion": 2,
+                    "messageSecret": "aj1a7T40PhcA1I71RLtDuDkUKZjCcc1S+1lcJrgr2VM="
+                  }
+                },
+                "Status": 3
+              },
+              "ack": 2,
+              "ackName": "DEVICE",
+              "replyTo": null,
+              "_data": {
+                "Info": {
+                  "Chat": "553195868493@s.whatsapp.net",
+                  "Sender": "553195868493@s.whatsapp.net",
+                  "IsFromMe": false,
+                  "IsGroup": false,
+                  "AddressingMode": "",
+                  "SenderAlt": "63883477839921@lid",
+                  "RecipientAlt": "",
+                  "BroadcastListOwner": "",
+                  "ID": "3ABE01ED3ED9DB00AEF3",
+                  "ServerID": 0,
+                  "Type": "text",
+                  "PushName": "Ricardo",
+                  "Timestamp": "2025-09-14T18:03:48Z",
+                  "Category": "",
+                  "Multicast": false,
+                  "MediaType": "",
+                  "Edit": "",
+                  "MsgBotInfo": {
+                    "EditType": "",
+                    "EditTargetID": "",
+                    "EditSenderTimestampMS": "0001-01-01T00:00:00Z"
+                  },
+                  "MsgMetaInfo": {
+                    "TargetID": "",
+                    "TargetSender": "",
+                    "TargetChat": "",
+                    "DeprecatedLIDSession": null,
+                    "ThreadMessageID": "",
+                    "ThreadMessageSenderJID": ""
+                  },
+                  "VerifiedName": null,
+                  "DeviceSentMeta": null
+                },
+                "Message": {
+                  "conversation": "Ola",
+                  "messageContextInfo": {
+                    "deviceListMetadata": {
+                      "senderKeyHash": "j6e+meVLDRqYdw==",
+                      "senderTimestamp": 1757205242,
+                      "recipientKeyHash": "yo3KUcWvF3+F+g==",
+                      "recipientTimestamp": 1757872641
+                    },
+                    "deviceListMetadataVersion": 2,
+                    "messageSecret": "aj1a7T40PhcA1I71RLtDuDkUKZjCcc1S+1lcJrgr2VM="
+                  }
+                },
+                "IsEphemeral": false,
+                "IsViewOnce": false,
+                "IsViewOnceV2": false,
+                "IsViewOnceV2Extension": false,
+                "IsDocumentWithCaption": false,
+                "IsLottieSticker": false,
+                "IsBotInvoke": false,
+                "IsEdit": false,
+                "SourceWebMsg": null,
+                "UnavailableRequestID": "",
+                "RetryCount": 0,
+                "NewsletterMeta": null,
+                "RawMessage": {
+                  "conversation": "Ola",
+                  "messageContextInfo": {
+                    "deviceListMetadata": {
+                      "senderKeyHash": "j6e+meVLDRqYdw==",
+                      "senderTimestamp": 1757205242,
+                      "recipientKeyHash": "yo3KUcWvF3+F+g==",
+                      "recipientTimestamp": 1757872641
+                    },
+                    "deviceListMetadataVersion": 2,
+                    "messageSecret": "aj1a7T40PhcA1I71RLtDuDkUKZjCcc1S+1lcJrgr2VM="
+                  }
+                },
+                "Status": 3
+              }
+            },
+            "environment": {
+              "version": "2025.9.2",
+              "engine": "GOWS",
+              "tier": "CORE",
+              "browser": null
+            }
+          },
+          "webhookUrl": "http://host.docker.internal:5678/webhook-test/webhook",
+          "executionMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Produtos": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Produtos",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Produtos",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3b81baaa-4400-4de9-9b66-16aa213d14a3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f66d8a96ef0496d6bf9be42f8a330eb32a16ced85d2d5dfc7531c12cb998e6ba"
+  },
+  "id": "CX8O9mdOuq7wtGzM",
+  "tags": []
+}
